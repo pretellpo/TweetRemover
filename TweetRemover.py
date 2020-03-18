@@ -37,44 +37,42 @@ roop = tweets // 200
 if (tweets % 200) != 0:
 	roop += 1
 
-# 全部のツイートのidと投稿日をリストに突っ込む
-exist_tweet = 0
-url_timeline = "https://api.twitter.com/1.1/statuses/user_timeline.json"
-tweet_list = []
-for i in range(roop):
-	params = {'screen_name': TARGET, "count": 200, "exclude_replies": False, "include_rts": True, "max_id": max_id}
-	req_result_tl = twitter.get(url_timeline, params=params)
-	if req_result_tl.status_code == 200:
-		user_timeline = json.loads(req_result_tl.text)
-		max_id = user_timeline[0]["id"]
-		for i in user_timeline:
-			if max_id > i["id"]:
-				max_id = i["id"]	# max_idを古いものに更新していく
-			tweet_id = i["id"]
-			created_at = i["created_at"]
-			tweet_list.append([tweet_id, created_at])
-			exist_tweet += 1
-	else:
-		print("ERROR: %d" % req_result_tl.status_code)
-		break
 
 # 削除対象ツイートの判定
 now_time = datetime.datetime.now(pytz.utc) # タイムゾーン付きなのでpytz
 delta = datetime.timedelta(days=DAYS)
 target_time = now_time - delta
 delete_target = []
-index = 0
-delete_tweet = 0
-for i in tweet_list:
-	created_at = datetime.datetime.strptime(i[1], '%a %b %d %H:%M:%S %z %Y')
-	if created_at < target_time:
-		delete_target.append(index)
-		delete_tweet += 1
-	index += 1
 
-# 実際に削除
-for i in delete_target:
-	url_delete = "https://api.twitter.com/1.1/statuses/destroy/" + str(tweet_list[i][0]) + ".json"
+# ツイートを3200件まで掘り返す
+exist_tweet = 0
+delete_tweet = 0
+url_timeline = "https://api.twitter.com/1.1/statuses/user_timeline.json"
+delete_list = []
+for i in range(roop):
+	params = {'screen_name': TARGET, "count": 200, "exclude_replies": False, "include_rts": True, "max_id": max_id}
+	req_result_tl = twitter.get(url_timeline, params=params)
+	if req_result_tl.status_code == 200:
+		user_timeline = json.loads(req_result_tl.text)
+		for i in user_timeline:
+			if max_id > i["id"]:
+				max_id = i["id"]	# max_idを古いものに更新していく
+			tweet_id = i["id"]
+			created_at = datetime.datetime.strptime(i["created_at"], '%a %b %d %H:%M:%S %z %Y')
+			if created_at < target_time:	# 対象期間より古いツイートなら削除リストに入れる
+				print(i["text"])
+				delete_list.append(tweet_id)
+				delete_tweet += 1
+			exist_tweet += 1
+			
+	else:
+		print("ERROR: %d" % req_result_tl.status_code)
+		break
+
+
+# 削除
+for i in delete_list:
+	url_delete = "https://api.twitter.com/1.1/statuses/destroy/" + str(i) + ".json"
 	req_result_del = twitter.post(url_delete)
 	if req_result_del.status_code != 200:
 		print("何かエラーが起きました:",req_result_del.status_code)
