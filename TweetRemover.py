@@ -56,7 +56,7 @@ for i in range(roop):
 		user_timeline = json.loads(req_result_tl.text)
 		for i in user_timeline:
 			if max_id > i["id"]:
-				max_id = i["id"]	# max_idを古いものに更新していく
+				max_id = i["id"] - 1	# max_idを古いものに更新していく
 			tweet_id = i["id"]
 			created_at = datetime.datetime.strptime(i["created_at"], '%a %b %d %H:%M:%S %z %Y')
 			if created_at < target_time:	# 対象期間より古いツイートなら削除リストに入れる
