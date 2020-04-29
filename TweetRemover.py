@@ -60,7 +60,7 @@ for i in range(roop):
 			tweet_id = i["id"]
 			created_at = datetime.datetime.strptime(i["created_at"], '%a %b %d %H:%M:%S %z %Y')
 			if created_at < target_time:	# 対象期間より古いツイートなら削除リストに入れる
-				print(i["text"])
+				print(i["text"].replace("\n",""))
 				delete_list.append(tweet_id)
 				delete_tweet += 1
 			exist_tweet += 1
