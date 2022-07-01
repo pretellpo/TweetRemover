@@ -40,7 +40,7 @@ if (tweets % 200) != 0:
 
 # 削除対象ツイートの判定
 now_time = datetime.datetime.now(pytz.utc) # タイムゾーン付きなのでpytz
-delta = datetime.timedelta(days=DAYS)
+delta = datetime.timedelta(days=int(DAYS))
 target_time = now_time - delta
 delete_target = []
 
