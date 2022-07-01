@@ -2,18 +2,18 @@
 import json
 import requests
 from requests_oauthlib import OAuth1Session
-import settings
 import datetime
 import pytz
 import sys
+import os
 
 # setting.pyから読み込み
-CONSUMER_KEY = settings.CONSUMER_KEY
-CONSUMER_SECRET = settings.CONSUMER_SECRET
-ACCESS_TOKEN = settings.ACCESS_TOKEN
-ACCESS_TOKEN_SECRET = settings.ACCESS_TOKEN_SECRET
-TARGET = settings.TARGET
-DAYS = settings.DAYS
+CONSUMER_KEY = os.environ['CONSUMER_KEY']
+CONSUMER_SECRET = os.environ['CONSUMER_SECRET']
+ACCESS_TOKEN = os.environ['ACCESS_TOKEN']
+ACCESS_TOKEN_SECRET = os.environ['ACCESS_TOKEN_SECRET']
+TARGET = os.environ['TARGET']
+DAYS = os.environ['DAYS']
 
 # Twitter
 twitter = OAuth1Session(CONSUMER_KEY, CONSUMER_SECRET,
