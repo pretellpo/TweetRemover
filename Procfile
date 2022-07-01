@@ -1,1 +1,1 @@
-auto-tweet-remover: python TweetRemover.py
+web: python TweetRemover.py
